@@ -25,7 +25,8 @@ const generateJsonParse = (info: string) => {
     {
         "name": "Leifer",
         "startDate": "2025-05-18T15:31:00",
-        "phoneNumber":"+503 72720787"
+        "phoneNumber":"+503 72720787",
+        "service": "Corte de pelo normal"
     }
     
     Objeto JSON a generar:`;
@@ -63,12 +64,17 @@ const flowConfirm = addKeyword(EVENTS.ACTION)
     },
   )
   .addAction({ capture: true }, async (ctx, { state, flowDynamic }) => {
+    await flowDynamic(`Que tipo de servicio necesitas?`);
+    await state.update({ service: ctx.body });
+  })
+  .addAction({ capture: true }, async (_ctx, { state, flowDynamic }) => {
+    console.log(state.getAllState());
     await flowDynamic(`Ultima pregunta ¿Cual es tu numero telefonico?`);
   })
   .addAction(
     { capture: true },
     async (ctx, { state, extensions, flowDynamic }) => {
-      const infoCustomer = `name: ${state.get("name")}, starteDate: ${state.get("startDate")}, phoneNumber: ${ctx.body}`;
+      const infoCustomer = `name: ${state.get("name")}, starteDate: ${state.get("startDate")}, phoneNumber: ${ctx.body},service: ${state.get("service")}`;
       const ai = extensions.ai as AIClass;
 
       const text = await ai.createChat([

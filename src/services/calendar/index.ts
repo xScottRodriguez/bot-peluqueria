@@ -1,5 +1,6 @@
 import { format, addMinutes } from "date-fns";
 import { envs } from "src/config/envs";
+import { IEvent } from "src/interfaces/event.interface";
 
 /**
  * get calendar
@@ -21,7 +22,16 @@ const getCurrentCalendar = async (): Promise<string> => {
   }, "");
   return list;
 };
+/**
+ * get current calendar in JSON format
+ * @returns
+ */
+const getCurrentCalendarToJson = async (): Promise<any[]> => {
+  const dataCalendarApi = await fetch(envs.getCalendarEvents);
+  const json: any[] = await dataCalendarApi.json();
 
+  return json;
+};
 /**
  * add to calendar
  * @param text
@@ -43,4 +53,35 @@ const appToCalendar = async (text: string) => {
   }
 };
 
-export { getCurrentCalendar, appToCalendar };
+/**
+ * Delete calendar event
+ * @param event
+ * @returns
+ */
+const deleteCalendarEvent = async (event: IEvent) => {
+  try {
+    const payload = {
+      startDate: event.date,
+      name: `Corte: ${event.name} -- ${event["phone number"]}`,
+    };
+    await fetch(envs.delteEventFromCalendar, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(payload),
+    });
+  } catch (error) {
+    console.error("error:", {
+      error: error.message,
+      stack: error.stack,
+    });
+  }
+};
+
+export {
+  getCurrentCalendar,
+  appToCalendar,
+  getCurrentCalendarToJson,
+  deleteCalendarEvent,
+};
