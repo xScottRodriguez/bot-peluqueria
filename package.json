@@ -2,9 +2,10 @@
   "name": "base-app",
   "version": "1.0.0",
   "description": "",
-  "type": "module",
   "scripts": {
     "dev": "npx tsx src/app.ts",
+    "build": "tsc --project tsconfig.build.json && tsc-alias -p tsconfig.build.json",
+    "start": "node dist/app.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
@@ -22,7 +23,9 @@
     "openai": "^4.27.0"
   },
   "devDependencies": {
+    "tsc-alias": "^1.8.16",
     "tsm": "^2.3.0",
-    "tsx": "^4.7.1"
+    "tsx": "^4.7.1",
+    "typescript": "^5.8.3"
   }
 }

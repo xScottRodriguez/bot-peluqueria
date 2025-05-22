@@ -1,8 +1,8 @@
 import { addKeyword, EVENTS } from "@bot-whatsapp/bot";
-import AIClass from "../services/ai";
-import { getHistoryParse, handleHistory } from "../utils/handleHistory";
+import AIClass from "src/services/ai";
+import { getHistoryParse, handleHistory } from "src/utils/handleHistory";
 import { generateTimer } from "../utils/generateTimer";
-import { getCurrentCalendar } from "../services/calendar";
+import { getCurrentCalendar } from "src/services/calendar";
 import { getFullCurrentDate } from "src/utils/currentDate";
 import { IPrompt } from "src/common/interfaces";
 import { PROMPT } from "src/common/enums";

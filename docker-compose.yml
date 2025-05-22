@@ -1,0 +1,20 @@
+version: "3.8"
+
+services:
+  bot-peluqueria:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV= production
+      - OPEN_API_KEY=${OPEN_API_KEY}
+      - MAKE_ADD_TO_CALENDAR=${MAKE_ADD_TO_CALENDAR}
+      - MAKE_GET_FROM_CALENDAR=${MAKE_GET_FROM_CALENDAR}
+      - GET_CALENDAR_EVENTS=${GET_CALENDAR_EVENTS}
+      - ADD_EVENT_TO_CALENDAR=${ADD_EVENT_TO_CALENDAR}
+      - DELETE_EVENT_FROM_CALENDAR=${DELETE_EVENT_FROM_CALENDAR}
+      - API_PROMPTS_URI=${API_PROMPTS_URI}
+      - API_PROMPTS_TOKEN=${API_PROMPTS_TOKEN}
