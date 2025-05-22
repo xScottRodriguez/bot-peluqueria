@@ -1,7 +1,3 @@
-Claro, a continuación te proporciono una plantilla de README.md adaptada al proyecto [bot-peluqueria](https://github.com/xScottRodriguez/bot-peluqueria), basada en las mejores prácticas para repositorios de GitHub . Esta estructura está pensada para facilitar la comprensión del proyecto y su implementación.
-
----
-
 # Bot Peluquería 💈
 
 ## Descripción
