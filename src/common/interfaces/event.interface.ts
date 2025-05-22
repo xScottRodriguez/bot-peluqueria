@@ -3,4 +3,5 @@ interface IEvent {
   name: string;
   "phone number": string;
 }
+
 export { IEvent };

@@ -3,6 +3,9 @@ import { generateTimer } from "../utils/generateTimer";
 import { getHistoryParse, handleHistory } from "../utils/handleHistory";
 import AIClass from "../services/ai";
 import { getFullCurrentDate } from "src/utils/currentDate";
+import { getPromptsByName } from "src/services/prompts";
+import { PROMPT } from "src/common/enums";
+import { IPrompt } from "src/common/interfaces";
 
 const PROMPT_SELLER = `
 Eres el asistente virtual en la prestigiosa barbería "Frank Barber Shop", ubicada en Avenida Capitán General Gerardo Barrios, enfrente de Iglesia Getsemaní Asambleas de Dios, San Rafael Oriente, Barrio San Benito. Tu principal responsabilidad es responder a las consultas de los clientes y ayudarles a programar sus citas.
@@ -41,12 +44,13 @@ INSTRUCCIONES:
 * Respuestas cortas ideales para enviar por whatsapp con emojis
 `;
 
-export const generatePromptSeller = (history: string) => {
+export const generatePromptSeller = async (history: string) => {
   const nowDate = getFullCurrentDate();
-  return PROMPT_SELLER.replace("{HISTORIAL_CONVERSACION}", history).replace(
-    "{CURRENT_DAY}",
-    nowDate,
-  );
+  const promptSeller: IPrompt = await getPromptsByName(PROMPT.seller);
+
+  return promptSeller.prompt
+    .replace("{HISTORIAL_CONVERSACION}", history)
+    .replace("{CURRENT_DAY}", nowDate);
 };
 
 /**
@@ -57,7 +61,7 @@ const flowSeller = addKeyword(EVENTS.ACTION).addAction(
     try {
       const ai = extensions.ai as AIClass;
       const history = getHistoryParse(state);
-      const prompt = generatePromptSeller(history);
+      const prompt = await generatePromptSeller(history);
 
       const text = await ai.createChat([
         {

@@ -1,6 +1,6 @@
 import { format, addMinutes } from "date-fns";
+import { IEvent } from "src/common/interfaces";
 import { envs } from "src/config/envs";
-import { IEvent } from "src/interfaces/event.interface";
 
 /**
  * get calendar

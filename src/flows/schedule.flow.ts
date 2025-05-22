@@ -4,6 +4,9 @@ import { getHistoryParse, handleHistory } from "../utils/handleHistory";
 import { generateTimer } from "../utils/generateTimer";
 import { getCurrentCalendar } from "../services/calendar";
 import { getFullCurrentDate } from "src/utils/currentDate";
+import { IPrompt } from "src/common/interfaces";
+import { PROMPT } from "src/common/enums";
+import { getPromptsByName } from "src/services/prompts";
 
 const PROMPT_SCHEDULE = `
 Como ingeniero de inteligencia artificial especializado en la programación de reuniones, tu objetivo es analizar la conversación y determinar la intención del cliente de programar una reunión, así como su preferencia de **fecha**, **hora** y **servicio**. La reunión durará según el servicio solicitado y solo puede ser programada entre las 6am y las 5pm, de lunes a sábado, y solo para la semana en curso.
@@ -62,13 +65,14 @@ INSTRUCCIONES:
 
 `;
 
-const generateSchedulePrompt = (summary: string, history: string) => {
+const generateSchedulePrompt = async (summary: string, history: string) => {
   const nowDate = getFullCurrentDate();
-  const mainPrompt = PROMPT_SCHEDULE.replace("{AGENDA_ACTUAL}", summary)
+  const mainPrompt: IPrompt = await getPromptsByName(PROMPT.schedule);
+
+  return mainPrompt.prompt
+    .replace("{AGENDA_ACTUAL}", summary)
     .replace("{HISTORIAL_CONVERSACION}", history)
     .replace("{CURRENT_DAY}", nowDate);
-
-  return mainPrompt;
 };
 
 /**
@@ -80,7 +84,7 @@ const flowSchedule = addKeyword(EVENTS.ACTION).addAction(
     const ai = extensions.ai as AIClass;
     const history = getHistoryParse(state);
     const list = await getCurrentCalendar();
-    const promptSchedule = generateSchedulePrompt(
+    const promptSchedule = await generateSchedulePrompt(
       list?.length ? list : "ninguna",
       history,
     );

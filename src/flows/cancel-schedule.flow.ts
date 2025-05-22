@@ -7,47 +7,41 @@ import {
   getCurrentCalendarToJson,
 } from "../services/calendar";
 import { getFullCurrentDate } from "src/utils/currentDate";
+import { getPromptsByName } from "src/services/prompts";
+import { PROMPT } from "src/common/enums";
+import { IPrompt } from "src/common/interfaces";
 
-const PROMPT_SCHEDULE = `
-Eres un ingeniero de inteligencia artificial especializado en la programación y cancelación de reuniones. Tu tarea es analizar la conversación para identificar si el cliente desea  **cancelar** una reunión cita o reserva. Debes interpretar la intención del usuario y responder de manera precisa, considerando las reglas y la agenda actual.
+// const PROMPT_SCHEDULE = `
+// Eres un ingeniero de inteligencia artificial especializado en la programación y cancelación de reuniones. Tu tarea es analizar la conversación para identificar si el cliente desea  **cancelar** una reunión cita o reserva. Debes interpretar la intención del usuario y responder de manera precisa, considerando las reglas y la agenda actual.
+//
+// Fecha de hoy: {CURRENT_DAY}
+//
+// Reuniones ya agendadas:
+// -----------------------------------
+// {AGENDA_ACTUAL}
+//
+// Historial de Conversación:
+// -----------------------------------
+// {HISTORIAL_CONVERSACION}
+//
+// Reglas para cancelar:
+// - Verifica si el cliente tiene una cita programada.
+// - Si menciona fecha y hora, identifica la cita exacta.
+// - Si hay coincidencia, responde pidiendo confirmación para cancelar.
+// - Si no se encuentra una cita para cancelar, responde indicando que no hay ninguna reunión agendada en ese horario.
+// - Sé claro y directo al indicar el resultado de la solicitud.
+//
+// INSTRUCCIONES:
+// - NO saludes.
+// - Detecta si se trata de una solicitud para  cancelar.
+// - Responde con mensajes breves y claros, ideales para WhatsApp.
+// - Siempre pide confirmación antes de cancelar una cita.
+// `;
 
-Fecha de hoy: {CURRENT_DAY}
+const generatepromptToFormatDate = async (prevAppointments: string) => {
+  const cancelPrompt: IPrompt = await getPromptsByName(PROMPT.Cancel);
 
-Reuniones ya agendadas:
------------------------------------
-{AGENDA_ACTUAL}
-
-Historial de Conversación:
------------------------------------
-{HISTORIAL_CONVERSACION}
-
-Reglas para cancelar:
-- Verifica si el cliente tiene una cita programada.
-- Si menciona fecha y hora, identifica la cita exacta.
-- Si hay coincidencia, responde pidiendo confirmación para cancelar.
-- Si no se encuentra una cita para cancelar, responde indicando que no hay ninguna reunión agendada en ese horario.
-- Sé claro y directo al indicar el resultado de la solicitud.
-
-INSTRUCCIONES:
-- NO saludes.
-- Detecta si se trata de una solicitud para  cancelar.
-- Responde con mensajes breves y claros, ideales para WhatsApp.
-- Siempre pide confirmación antes de cancelar una cita.
-`;
-
-const PROMPT_CANCEL = `
-  tendras un string con la lista de espacios recervados:{RESERVAS_PREVIAS} y la fecha del usuario indica,
-adicionamlente el string puede contener la fecha y hora de la cita que el usuario desea cancelar.
-  deberas tomar las fechas y horas en el string y convertirlas a format yyyy-MM-ddThh:mm
-  y luego comparar con la FECHA que el usuario te data para cancelar y deberas hacerla con el mismo formato yyyy-MM-ddThh:mm
-
-luego retornaras la fecha que esta dentro de ese listado
-  
-
-`;
-
-const generatepromptToFormatDate = (prevAppointments: string) => {
-  return PROMPT_CANCEL.replace("{RESERVAS_PREVIAS}", prevAppointments);
+  return cancelPrompt.prompt.replace("{RESERVAS_PREVIAS}", prevAppointments);
 };
 
 /**
@@ -73,7 +67,7 @@ const flowCancel = addKeyword(EVENTS.ACTION)
 
       const list = await getCurrentCalendar();
       const stringList = list?.length ? list : "ninguna";
-      const promptToCancel = generatepromptToFormatDate(stringList);
+      const promptToCancel = await generatepromptToFormatDate(stringList);
 
       // Analiza la fecha ingresada
       const formattedDate = await ai.createChat([

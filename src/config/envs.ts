@@ -5,6 +5,8 @@ interface IEnv {
   GET_CALENDAR_EVENTS: string;
   ADD_EVENT_TO_CALENDAR: string;
   DELETE_EVENT_FROM_CALENDAR: string;
+  API_PROMPTS_URI: string;
+  API_PROMPTS_TOKEN: string;
 }
 
 const envSchema = Joi.object<IEnv>({
@@ -12,6 +14,8 @@ const envSchema = Joi.object<IEnv>({
   GET_CALENDAR_EVENTS: Joi.string().required(),
   ADD_EVENT_TO_CALENDAR: Joi.string().required(),
   DELETE_EVENT_FROM_CALENDAR: Joi.string().required(),
+  API_PROMPTS_URI: Joi.string().required(),
+  API_PROMPTS_TOKEN: Joi.string().required(),
 }).unknown(true);
 
 const { error, value } = envSchema.validate(process.env);
@@ -25,4 +29,6 @@ export const envs = {
   getCalendarEvents: envVars.GET_CALENDAR_EVENTS,
   adddEventToCalendar: envVars.ADD_EVENT_TO_CALENDAR,
   delteEventFromCalendar: envVars.DELETE_EVENT_FROM_CALENDAR,
+  apiPromptsUri: envVars.API_PROMPTS_URI,
+  apiPromptsToken: envVars.API_PROMPTS_TOKEN,
 };

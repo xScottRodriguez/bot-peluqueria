@@ -29,7 +29,10 @@ export default async (
     -----------------------------
     Tu objetivo es comprender la intención del cliente y seleccionar la acción más adecuada en respuesta a su declaración.
     
-    Respuesta ideal (AGENDAR|HABLAR|CONFIRMAR):`.replace("{HISTORY}", history);
+    Respuesta ideal (AGENDAR|HABLAR|CONFIRMAR|CANCELAR):`.replace(
+      "{HISTORY}",
+      history,
+    );
 
   const text = await ai.createChat([
     {
@@ -43,4 +46,3 @@ export default async (
   if (text.includes("CONFIRMAR")) return gotoFlow(flowConfirm);
   if (text.includes("CANCELAR")) return gotoFlow(flowCancel);
 };
-
