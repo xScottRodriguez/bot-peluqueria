@@ -64,7 +64,7 @@ const deleteCalendarEvent = async (event: IEvent) => {
       startDate: event.date,
       name: `Corte: ${event.name} -- ${event["phone number"]}`,
     };
-    await fetch(envs.delteEventFromCalendar, {
+    await fetch(envs.deleteEventFromCalendar, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

@@ -4,6 +4,7 @@ import { BaileysProvider } from "@bot-whatsapp/provider-baileys";
 
 import AIClass from "./services/ai";
 import flows from "./flows";
+import { envs } from "./config/envs";
 
 const ai = new AIClass(process.env.OPEN_API_KEY, "gpt-3.5-turbo");
 
@@ -18,8 +19,8 @@ const main = async () => {
     },
     { extensions: { ai } },
   );
-  provider.initHttpServer(4000);
-  console.log("sever running on port 4000");
+  provider.initHttpServer(envs.port ?? 4000);
+  console.log(`Server Running on port ${envs.port}`);
 };
 
 main();

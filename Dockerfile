@@ -47,7 +47,7 @@ COPY --from=builder /app/dist ./dist
 # USER appuser
 
 # Exponer el puerto (ajústalo según tu app)
-EXPOSE 3000
+EXPOSE 4000
 
 # Comando de ejecución
 CMD ["npm","start"]

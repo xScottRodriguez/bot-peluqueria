@@ -5,7 +5,8 @@ const getPromptsByName = async (name: string): Promise<IPrompt> => {
   const url = new URL(`${envs.apiPromptsUri}/prompts`);
   url.searchParams.set("filters[name][$contains]", name);
 
-  const response = await fetch(url, {
+  console.log({ uri: url.toString() });
+  const response = await fetch(url.toString(), {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

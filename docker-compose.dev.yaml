@@ -1,0 +1,11 @@
+services:
+  bot-peluqueria:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    restart: always
+    ports:
+      - "${PORT:-4000}:4000"
+    env_file: ./.env
+    volumes:
+      - ./src:/app/src
