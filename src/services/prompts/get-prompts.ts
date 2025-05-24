@@ -5,7 +5,6 @@ const getPromptsByName = async (name: string): Promise<IPrompt> => {
   const url = new URL(`${envs.apiPromptsUri}/prompts`);
   url.searchParams.set("filters[name][$contains]", name);
 
-  console.log({ uri: url.toString() });
   const response = await fetch(url.toString(), {
     method: "GET",
     headers: {
@@ -15,7 +14,7 @@ const getPromptsByName = async (name: string): Promise<IPrompt> => {
   });
 
   const { data }: IPagination = await response.json();
-  if (data.length === 0) {
+  if (data?.length === 0) {
     throw new Error(`Prompt with name ${name} not found`);
   }
 

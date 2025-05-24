@@ -23,7 +23,7 @@ export default async (
     
     Posibles acciones a realizar:
     1. AGENDAR: Esta acción se debe realizar cuando el cliente expresa su deseo de programar una cita.
-    2. HABLAR: Esta acción se debe realizar cuando el cliente desea hacer una pregunta o necesita más información.
+    2. HABLAR: Esta acción se debe realizar cuando el cliente desea hacer una pregunta o necesita más información o si pregunta por el propietario de la peluqueria(frank,francisco,chico) sera uno de esos 3 nombres ya que son apodos y nombre real.
     3. CONFIRMAR: Esta acción se debe realizar cuando el cliente y el vendedor llegaron a un acuerdo mutuo proporcionando una fecha, dia y hora exacta sin conflictos de hora.
     4. CANCELAR: Esta acción se debe realizar cuando el cliente desea cancelar una cita previamente agendada.
     -----------------------------

@@ -18,21 +18,9 @@ const generatePromptToFormatDate = async (history: string) => {
     .replace("{HISTORY}", history);
 };
 
-const generateJsonParse = (info: string) => {
-  const prompt = `tu tarea principal es analizar la información proporcionada en el contexto y generar un objeto JSON que se adhiera a la estructura especificada a continuación. 
-
-    Contexto: "${info}"
-    
-    {
-        "name": "Leifer",
-        "startDate": "2025-05-18T15:31:00",
-        "phoneNumber":"+503 72720787",
-        "service": "Corte de pelo normal"
-    }
-    
-    Objeto JSON a generar:`;
-
-  return prompt;
+const generateJsonParse = async (info: string) => {
+  const prompt: IPrompt = await getPromptsByName(PROMPT.generateJson);
+  return prompt.prompt.replace("{INFO}", info);
 };
 
 /**
@@ -81,15 +69,14 @@ const flowConfirm = addKeyword(EVENTS.ACTION)
     async (ctx, { state, extensions, flowDynamic }) => {
       const infoCustomer = `name: ${state.get("name")}, starteDate: ${state.get("startDate")}, phoneNumber: ${state.get("phoneNumber")},service: ${ctx.body}`;
       const ai = extensions.ai as AIClass;
-
+      const prompt = await generateJsonParse(infoCustomer);
       const text = await ai.createChat([
         {
           role: "system",
-          content: generateJsonParse(infoCustomer),
+          content: prompt,
         },
       ]);
 
-      console.log({ text });
       await appToCalendar(text);
       clearHistory(state);
       await flowDynamic("Listo! agendado Buen dia");

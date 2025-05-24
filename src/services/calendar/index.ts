@@ -1,5 +1,5 @@
 import { format, addMinutes } from "date-fns";
-import { IEvent } from "src/common/interfaces";
+import { IEvent, IEventCalendar } from "src/common/interfaces";
 import { envs } from "src/config/envs";
 
 /**
@@ -8,16 +8,16 @@ import { envs } from "src/config/envs";
  */
 const getCurrentCalendar = async (): Promise<string> => {
   const dataCalendarApi = await fetch(envs.getCalendarEvents);
-  const json: any[] = await dataCalendarApi.json();
+  const json: IEventCalendar[] = await dataCalendarApi.json();
 
   const list = json.reduce((prev, current) => {
-    if (!current?.date) {
+    if (!current?.startDate) {
       return prev;
     }
     return (prev += [
       `Espacio reservado (no disponible): `,
-      `Desde ${format(current?.date, "yyyy-MM-dd HH:mm")} `,
-      `Hasta ${format(addMinutes(current?.date, 45), "yyyy-MM-dd HH:mm")} \n`,
+      `Desde ${format(current?.startDate, "yyyy-MM-dd HH:mm")} `,
+      `Hasta ${format(current?.endDate, "yyyy-MM-dd HH:mm")} \n`,
     ].join(" "));
   }, "");
   return list;
@@ -26,9 +26,9 @@ const getCurrentCalendar = async (): Promise<string> => {
  * get current calendar in JSON format
  * @returns
  */
-const getCurrentCalendarToJson = async (): Promise<any[]> => {
+const getCurrentCalendarToJson = async (): Promise<IEventCalendar[]> => {
   const dataCalendarApi = await fetch(envs.getCalendarEvents);
-  const json: any[] = await dataCalendarApi.json();
+  const json: IEventCalendar[] = await dataCalendarApi.json();
 
   return json;
 };
@@ -58,11 +58,11 @@ const appToCalendar = async (text: string) => {
  * @param event
  * @returns
  */
-const deleteCalendarEvent = async (event: IEvent) => {
+const deleteCalendarEvent = async (event: IEventCalendar) => {
   try {
     const payload = {
-      startDate: event.date,
-      name: `Corte: ${event.name} -- ${event["phone number"]}`,
+      startDate: event.startDate,
+      name: `${event.service}: ${event.client} -- ${event.phoneNumber}`,
     };
     await fetch(envs.deleteEventFromCalendar, {
       method: "POST",

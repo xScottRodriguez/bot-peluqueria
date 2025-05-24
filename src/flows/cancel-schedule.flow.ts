@@ -8,39 +8,12 @@ import {
 } from "../services/calendar";
 import { getPromptsByName } from "src/services/prompts";
 import { PROMPT } from "src/common/enums";
-import { IPrompt } from "src/common/interfaces";
-
-// const PROMPT_SCHEDULE = `
-// Eres un ingeniero de inteligencia artificial especializado en la programación y cancelación de reuniones. Tu tarea es analizar la conversación para identificar si el cliente desea  **cancelar** una reunión cita o reserva. Debes interpretar la intención del usuario y responder de manera precisa, considerando las reglas y la agenda actual.
-//
-// Fecha de hoy: {CURRENT_DAY}
-//
-// Reuniones ya agendadas:
-// -----------------------------------
-// {AGENDA_ACTUAL}
-//
-// Historial de Conversación:
-// -----------------------------------
-// {HISTORIAL_CONVERSACION}
-//
-// Reglas para cancelar:
-// - Verifica si el cliente tiene una cita programada.
-// - Si menciona fecha y hora, identifica la cita exacta.
-// - Si hay coincidencia, responde pidiendo confirmación para cancelar.
-// - Si no se encuentra una cita para cancelar, responde indicando que no hay ninguna reunión agendada en ese horario.
-// - Sé claro y directo al indicar el resultado de la solicitud.
-//
-// INSTRUCCIONES:
-// - NO saludes.
-// - Detecta si se trata de una solicitud para  cancelar.
-// - Responde con mensajes breves y claros, ideales para WhatsApp.
-// - Siempre pide confirmación antes de cancelar una cita.
-// `;
+import { IEventCalendar, IPrompt } from "src/common/interfaces";
 
 const generatepromptToFormatDate = async (prevAppointments: string) => {
   const cancelPrompt: IPrompt = await getPromptsByName(PROMPT.Cancel);
 
-  return cancelPrompt.prompt.replace("{RESERVAS_PREVIAS}", prevAppointments);
+  return cancelPrompt.prompt.replaceAll("{RESERVAS_PREVIAS}", prevAppointments);
 };
 
 /**
@@ -54,6 +27,12 @@ const flowCancel = addKeyword(EVENTS.ACTION)
   })
   .addAction({ capture: true }, async (ctx, { state, flowDynamic }) => {
     await state.update({ name: ctx.body });
+
+    await flowDynamic("¿Cuál es tu numero telefonico?");
+  })
+
+  .addAction({ capture: true }, async (ctx, { state, flowDynamic }) => {
+    await state.update({ phone: ctx.body });
     await flowDynamic(
       "Perfecto. ¿Para qué fecha y hora tenías agendada la cita?",
     );
@@ -83,30 +62,22 @@ const flowCancel = addKeyword(EVENTS.ACTION)
       await state.update({ cancelDate: formattedDate });
 
       const calendar = await getCurrentCalendarToJson();
-      const calendarFormatted = calendar.map((event) => {
-        const [date, time] = event.date.split(" ");
-        return {
-          ...event,
-          date: `${date}T${time}`,
-        };
-      });
+
       const name = state.get("name");
+      const phone = state.get("phone");
       const cancelDate = formattedDate;
 
-      const matchingEvent = calendarFormatted.find((event) => {
-        console.log({
-          cancelDate,
-          event,
-        });
+      const matchingEvent: IEventCalendar = calendar.find((event) => {
         return (
-          event.name?.toLowerCase() === name.toLowerCase() &&
-          event.date?.includes(cancelDate) // aquí puedes afinar el match según el formato real de fecha/hora
+          event.client?.toLowerCase() === name.toLowerCase() &&
+          event.phoneNumber.toLowerCase() === phone.toLowerCase() &&
+          event.startDate?.includes(cancelDate)
         );
       });
 
       if (matchingEvent) {
         await flowDynamic(
-          `Encontré tu cita programada para el ${matchingEvent.date}. ¿Deseas cancelarla? (sí/no)`,
+          `Encontré tu cita programada para el ${matchingEvent.startDate}. ¿Deseas cancelarla? (sí/no)`,
         );
         await state.update({ eventToCancel: matchingEvent });
       } else {
@@ -119,7 +90,7 @@ const flowCancel = addKeyword(EVENTS.ACTION)
   )
   .addAction({ capture: true }, async (ctx, { state, flowDynamic }) => {
     const confirm = ctx.body.trim().toLowerCase();
-    const event = state.get("eventToCancel");
+    const event: IEventCalendar = state.get("eventToCancel");
 
     if (
       confirm.toLocaleUpperCase() === "sí" ||

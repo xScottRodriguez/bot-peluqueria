@@ -4,4 +4,12 @@ interface IEvent {
   "phone number": string;
 }
 
-export { IEvent };
+interface IEventCalendar {
+  client: string;
+  service: string;
+  startDate: string;
+  endDate: string;
+  phoneNumber: string;
+}
+
+export { IEvent, IEventCalendar };
