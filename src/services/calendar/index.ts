@@ -62,6 +62,7 @@ const deleteCalendarEvent = async (event: IEventCalendar) => {
   try {
     const payload = {
       startDate: event.startDate,
+      endDate: event.endDate,
       name: `${event.service}: ${event.client} -- ${event.phoneNumber}`,
     };
     await fetch(envs.deleteEventFromCalendar, {
