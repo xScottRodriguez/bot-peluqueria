@@ -5,6 +5,7 @@ enum PROMPT {
   services = "services",
   Cancel = "cancel-appointment",
   generateJson = "generate-json-parse",
+  specialSchedule = "special-schedule",
 }
 
 export { PROMPT };

@@ -7,15 +7,26 @@ import { getFullCurrentDate } from "src/utils/currentDate";
 import { IPrompt } from "src/common/interfaces";
 import { PROMPT } from "src/common/enums";
 import { getPromptsByName } from "src/services/prompts";
+import { normalizeDate } from "src/utils/date-normalizer";
 
+const generateSpecialSchedule = async () => {
+  const specialSchedule = await getPromptsByName(PROMPT.specialSchedule);
+
+  const from = normalizeDate(specialSchedule.from);
+  const to = normalizeDate(specialSchedule.to);
+  return specialSchedule.prompt.replace(`{FROM}`, from).replace(`{TO}`, to);
+};
 const generateSchedulePrompt = async (summary: string, history: string) => {
   const nowDate = getFullCurrentDate();
-  const mainPrompt: IPrompt = await getPromptsByName(PROMPT.schedule);
+  const [mainPrompt, specialSchedule] = await Promise.all<
+    [Promise<IPrompt>, Promise<string>]
+  >([getPromptsByName(PROMPT.schedule), generateSpecialSchedule()]);
 
   return mainPrompt.prompt
     .replace("{AGENDA_ACTUAL}", summary)
     .replace("{HISTORIAL_CONVERSACION}", history)
-    .replace("{CURRENT_DAY}", nowDate);
+    .replace("{CURRENT_DAY}", nowDate)
+    .replace("{HORARIO_ESPECIAL}", specialSchedule);
 };
 
 /**
