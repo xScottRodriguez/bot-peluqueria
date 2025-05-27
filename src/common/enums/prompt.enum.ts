@@ -6,6 +6,7 @@ enum PROMPT {
   Cancel = "cancel-appointment",
   generateJson = "generate-json-parse",
   specialSchedule = "special-schedule",
+  filterCalendar = "generate-range-to-get-events",
 }
 
 export { PROMPT };
