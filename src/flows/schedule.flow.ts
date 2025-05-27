@@ -18,15 +18,20 @@ const generateSpecialSchedule = async () => {
 };
 const generateSchedulePrompt = async (summary: string, history: string) => {
   const nowDate = getFullCurrentDate();
-  const [mainPrompt, specialSchedule] = await Promise.all<
-    [Promise<IPrompt>, Promise<string>]
-  >([getPromptsByName(PROMPT.schedule), generateSpecialSchedule()]);
+  const [mainPrompt, specialSchedule, services] = await Promise.all<
+    [Promise<IPrompt>, Promise<string>, Promise<IPrompt>]
+  >([
+    getPromptsByName(PROMPT.schedule),
+    generateSpecialSchedule(),
+    getPromptsByName(PROMPT.services),
+  ]);
 
   return mainPrompt.prompt
     .replace("{AGENDA_ACTUAL}", summary)
     .replace("{HISTORIAL_CONVERSACION}", history)
     .replace("{CURRENT_DAY}", nowDate)
-    .replace("{HORARIO_ESPECIAL}", specialSchedule);
+    .replace("{HORARIO_ESPECIAL}", specialSchedule)
+    .replace("{SERVICIOS}", services.prompt);
 };
 
 /**

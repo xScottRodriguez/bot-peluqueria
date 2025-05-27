@@ -9,11 +9,14 @@ import { IPrompt } from "src/common/interfaces";
 
 export const generatePromptSeller = async (history: string) => {
   const nowDate = getFullCurrentDate();
-  const promptSeller: IPrompt = await getPromptsByName(PROMPT.seller);
+  const [promptSeller, promptServices] = await Promise.all<
+    [Promise<IPrompt>, Promise<IPrompt>]
+  >([getPromptsByName(PROMPT.seller), getPromptsByName(PROMPT.services)]);
 
   return promptSeller.prompt
     .replace("{HISTORIAL_CONVERSACION}", history)
-    .replace("{CURRENT_DAY}", nowDate);
+    .replace("{CURRENT_DAY}", nowDate)
+    .replace("{SERVICIOS}", promptServices.prompt);
 };
 
 /**
